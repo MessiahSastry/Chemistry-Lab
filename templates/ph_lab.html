@@ -26,7 +26,7 @@
     }
     #left-shelf, #right-shelf {
 		width:112px; min-width:90px; height:86vh; margin:0 2vw; background:rgba(220,241,252,0.98);
-		border-radius:20px; box-shadow:0 2px 16px #abcbe177; display:flex; flex-direction:column; align-	items:center; padding:16px 2px;
+		border-radius:20px; box-shadow:0 2px 16px #abcbe177; display:flex; flex-direction:column; align-items:center; padding:16px 2px;
 		justify-content:flex-start; border:2px solid #8ec1e1;
 		overflow-y: auto;
 		max-height: 86vh;
@@ -130,6 +130,23 @@
     .label-mini { width:100%; text-align:center; position:absolute; bottom:2px; font-size:0.79em; }
     #right-shelf { background:rgba(244,245,253,0.97); border-color:#b9daf7; }
     #footer { position:fixed; left:0; right:0; bottom:0; text-align:center; color:#7f96bc; font-size:1em; padding:5px 0;}
+    #info-box {
+      background: #f6fafd;
+      border: 1.3px solid #b4d4ef;
+      border-radius: 10px;
+      padding: 13px 14px 10px 14px;
+      margin: 18px auto 0 auto;
+      width: 94%;
+      max-width: 450px;
+      font-size: 1em;
+      color: #254368;
+      box-shadow: 0 2px 10px #bfdffd23;
+      text-align: left;
+    }
+    #info-box strong {
+      font-size: 1.07em;
+      color: #146cc1;
+    }
     @media (max-width:900px) {
       #main-ui{flex-direction:column;align-items:center;}
       #left-shelf,#right-shelf{width:98vw;min-width:0;flex-direction:row;justify-content:center;align-items:flex-end;height:auto;margin:10px 0;}
@@ -170,13 +187,16 @@
       <div class="ph-color" style="background:#6c27e8;"></div>
       <span class="ph-label">pH: 1 (acid) to 14 (base)</span>
     </div>
+    <div id="info-box">
+      <strong>Why does the pH paper change color?</strong><br>
+      The pH paper contains special dyes that react with acids or bases. When you dip the paper into a solution, it changes color to show the pH value: red for strong acids, green for neutral, blue/purple for strong bases.
+    </div>
   </div>
   <div id="right-shelf">
     <div id="right-shelf-title">Tested Samples</div>
   </div>
 </div>
 <div id="footer">© St. Patrick's School – Interactive Chemistry Lab | Powered by AI</div>
-<!-- Sounds are removed -->
 
 <script>
 function colorForPH(pH) {
@@ -184,19 +204,20 @@ function colorForPH(pH) {
   if (pH == 7) return '#61e827'; if (pH == 8) return '#21e7de'; if (pH <= 11) return '#236bdb';
   return '#6c27e8';
 }
-
 function labelForPH(pH) {
-  if (pH <= 2) return "Strong Acid (pH 1-2)"; if (pH <= 5) return "Weak Acid (pH 3-5)";
-  if (pH == 6) return "Almost Neutral (pH 6)"; if (pH == 7) return "Neutral (pH 7)";
-  if (pH == 8) return "Weak Base (pH 8)"; if (pH <= 11) return "Base (pH 9-11)";
+  if (pH <= 2) return "Strong Acid (pH 1-2)";
+  if (pH <= 5) return "Weak Acid (pH 3-5)";
+  if (pH == 6) return "Almost Neutral (pH 6)";
+  if (pH == 7) return "Neutral (pH 7)";
+  if (pH == 8) return "Weak Base (pH 8)";
+  if (pH <= 11) return "Base (pH 9-11)";
   return "Strong Base (pH 12-14)";
 }
-
 function makeBottle(chem, type) {
   const el = document.createElement('div');
   el.className = `bottle bottle-${type}`;
   el.title = `${chem.name} ${chem.formula ? '('+chem.formula+')' : ''}`;
-  
+
   const cap = document.createElement('div');
   cap.style.cssText = `width:38px; height:14px; background:${type==='acid' ? '#f45b7d' : '#43d6a4'}; border-radius:12px 12px 8px 8px; margin:5px auto 0 auto;`;
   el.appendChild(cap);
@@ -209,11 +230,10 @@ function makeBottle(chem, type) {
   lbl.className = 'bottle-label';
   lbl.innerHTML = `${chem.name}<br>${chem.formula ? `<span style='font-size:0.88em;color:#575;'>${chem.formula}</span>` : ''}`;
   el.appendChild(lbl);
-  
+
   el.onclick = (event) => pickBottle(event, chem);
   return el;
 }
-
 const leftShelf = document.getElementById('left-shelf');
 const mainBeaker = document.getElementById('main-beaker');
 const liquid = document.getElementById('liquid');
@@ -230,10 +250,10 @@ document.addEventListener('DOMContentLoaded', async () => {
     try {
         const [acidsRes, basesRes] = await Promise.all([ fetch('/api/acids'), fetch('/api/bases') ]);
         if (!acidsRes.ok || !basesRes.ok) throw new Error('Network response was not ok.');
-        
+
         const acids = await acidsRes.json();
         const bases = await basesRes.json();
-        
+
         acids.forEach(chem => leftShelf.appendChild(makeBottle(chem, 'acid')));
         bases.forEach(chem => leftShelf.appendChild(makeBottle(chem, 'base')));
     } catch (error) {
@@ -241,23 +261,21 @@ document.addEventListener('DOMContentLoaded', async () => {
         leftShelf.innerHTML = "<p style='color:red; font-size: 0.9em; text-align: center;'>Error loading chemicals.</p>";
     }
 });
-
 function enablePaperDrag() {
-    let currentPaper = phPaper;
     let isDragging = false, startX = 0, startY = 0;
     let initialPaperTop = 0, initialPaperRight = 0;
 
     const onDragStart = (e) => {
-        if (currentPaper.style.cursor === 'not-allowed') return;
+        if (phPaper.style.cursor === 'not-allowed') return;
         isDragging = true;
-        currentPaper.classList.add('active');
-        currentPaper.style.transition = 'none';
-        
+        phPaper.classList.add('active');
+        phPaper.style.transition = 'none';
+
         startX = e.type === 'touchstart' ? e.touches[0].clientX : e.clientX;
         startY = e.type === 'touchstart' ? e.touches[0].clientY : e.clientY;
-        initialPaperTop = currentPaper.offsetTop;
-        initialPaperRight = parseFloat(window.getComputedStyle(currentPaper).right);
-        
+        initialPaperTop = phPaper.offsetTop;
+        initialPaperRight = parseFloat(window.getComputedStyle(phPaper).right);
+
         document.addEventListener('mousemove', onDrag);
         document.addEventListener('touchmove', onDrag, { passive: false });
         document.addEventListener('mouseup', onDragEnd);
@@ -271,46 +289,56 @@ function enablePaperDrag() {
         let currentY = e.type === 'touchmove' ? e.touches[0].clientY : e.clientY;
         let dx = currentX - startX;
         let dy = currentY - startY;
-        currentPaper.style.top = `${initialPaperTop + dy}px`;
-        currentPaper.style.right = `${initialPaperRight - dx}px`;
+        phPaper.style.top = `${initialPaperTop + dy}px`;
+        phPaper.style.right = `${initialPaperRight - dx}px`;
     };
 
     const onDragEnd = () => {
         if (!isDragging) return;
         isDragging = false;
-        currentPaper.classList.remove('active');
+        phPaper.classList.remove('active');
 
         document.removeEventListener('mousemove', onDrag);
         document.removeEventListener('touchmove', onDrag);
         document.removeEventListener('mouseup', onDragEnd);
         document.removeEventListener('touchend', onDragEnd);
 
-        const paperRect = currentPaper.getBoundingClientRect();
+        const paperRect = phPaper.getBoundingClientRect();
         const beakerRect = mainBeaker.getBoundingClientRect();
         const isOverlapping = !(paperRect.right < beakerRect.left + 20 || paperRect.left > beakerRect.right - 20 || paperRect.bottom < beakerRect.top + 30 || paperRect.top > beakerRect.bottom - 20);
 
-        currentPaper.style.transition = 'right 0.3s, top 0.3s, background 0.5s';
+        phPaper.style.transition = 'right 0.3s, top 0.3s, background 0.5s';
 
         if (isOverlapping && curChem) {
-            currentPaper.style.top = '60px';
-            currentPaper.style.right = '39px';
-            currentPaper.style.background = colorForPH(curChem.ph);
-            currentPaper.style.cursor = 'not-allowed';
-            
-            resultLabel.innerHTML = `<span style="color:${colorForPH(curChem.ph)}; font-weight: bold;">${labelForPH(curChem.ph)}</span>`;
+            phPaper.style.top = '60px';
+            phPaper.style.right = '39px';
+            phPaper.style.background = colorForPH(curChem.ph);
+            phPaper.style.cursor = 'not-allowed';
+
+            resultLabel.innerHTML = `
+              <span style="color:${colorForPH(curChem.ph)}; font-weight: bold;">
+                ${labelForPH(curChem.ph)}
+              </span>
+              <br>
+              <span style="font-size:0.95em; color:#525;">
+                The pH paper changed color because the solution is <b>${labelForPH(curChem.ph).toLowerCase()}</b>.<br>
+                This happens because the dyes in the paper react to the pH!
+              </span>
+            `;
             nextBtn.style.display = 'inline-block';
         } else {
-            currentPaper.style.top = '26px';
-            currentPaper.style.right = '-45px';
-            currentPaper.style.background = '#faf6c3';
+            phPaper.style.top = '26px';
+            phPaper.style.right = '-45px';
+            phPaper.style.background = '#faf6c3';
         }
     };
-    
-    // Clear old listeners before adding new ones
+
+    // Reset listeners before adding new ones
     const newPaper = phPaper.cloneNode(true);
     phPaper.parentNode.replaceChild(newPaper, phPaper);
-    newPaper.addEventListener('mousedown', onDragStart);
-    newPaper.addEventListener('touchstart', onDragStart, { passive: false });
+    window.phPaper = document.getElementById('ph-paper');
+    phPaper.addEventListener('mousedown', onDragStart);
+    phPaper.addEventListener('touchstart', onDragStart, { passive: false });
 }
 
 function pickBottle(event, chem) {
@@ -320,7 +348,7 @@ function pickBottle(event, chem) {
 
     const bottleRect = event.currentTarget.getBoundingClientRect();
     const tableRect = document.getElementById('table-zone').getBoundingClientRect();
-    
+
     const bottleAnim = event.currentTarget.cloneNode(true);
     bottleAnim.style.cssText = `position:fixed; z-index:999; left:${bottleRect.left}px; top:${bottleRect.top}px; transition: all 0.75s cubic-bezier(.21,.85,.46,1.05);`;
     document.body.appendChild(bottleAnim);
@@ -336,7 +364,7 @@ function pickBottle(event, chem) {
         liquid.style.display = 'block';
         liquid.style.background = chem.color;
         liquid.style.height = '0px';
-        
+
         setTimeout(() => {
             liquid.style.transition = 'height 0.7s cubic-bezier(.35,.89,.66,1.22)';
             liquid.style.height = '62px';
@@ -347,17 +375,19 @@ function pickBottle(event, chem) {
             bottleAnim.style.left = `${bottleRect.left}px`;
             bottleAnim.style.top = `${bottleRect.top}px`;
             bottleAnim.style.transform = 'scale(1)';
-            setTimeout(() => { 
-                if (document.body.contains(bottleAnim)) document.body.removeChild(bottleAnim); 
-                pouring = false; 
+            setTimeout(() => {
+                if (document.body.contains(bottleAnim)) document.body.removeChild(bottleAnim);
+                pouring = false;
             }, 700);
-            
+
             phPaper.style.display = 'block';
             phPaper.style.top = '26px';
             phPaper.style.right = '-45px';
             phPaper.style.background = '#faf6c3';
             phPaper.style.cursor = 'grab';
             enablePaperDrag();
+            resultLabel.innerHTML = '';
+            nextBtn.style.display = 'none';
         }, 800);
     }, 790);
 }
@@ -374,9 +404,9 @@ nextBtn.onclick = function() {
     lbl.className = 'label-mini';
     lbl.innerHTML = curChem.formula || curChem.name.split(' ')[0];
     mini.appendChild(lbl);
-    
+
     rightShelf.appendChild(mini);
-    
+
     mainBeaker.style.display = 'none';
     liquid.style.display = 'none';
     beakerLabel.innerHTML = '';
