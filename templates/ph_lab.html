@@ -25,14 +25,13 @@
       display:flex; flex-direction:row; align-items:flex-end; justify-content:center; z-index:2;
     }
     #left-shelf, #right-shelf {
-  	width:112px; min-width:90px; height:86vh; margin:0 2vw; background:rgba(220,241,252,0.98);
-  	border-radius:20px; box-shadow:0 2px 16px #abcbe177; display:flex; flex-direction:column; align-	items:center; padding:16px 2px;
-  	justify-content:flex-start; border:2px solid #8ec1e1;
-  	overflow-y: auto;
-  	max-height: 86vh;
-  	scroll-behavior: smooth;
+		width:112px; min-width:90px; height:86vh; margin:0 2vw; background:rgba(220,241,252,0.98);
+		border-radius:20px; box-shadow:0 2px 16px #abcbe177; display:flex; flex-direction:column; align-	items:center; padding:16px 2px;
+		justify-content:flex-start; border:2px solid #8ec1e1;
+		overflow-y: auto;
+		max-height: 86vh;
+		scroll-behavior: smooth;
 	}
-
     #left-shelf-title, #right-shelf-title {
       font-weight: bold; margin-bottom: 14px; font-size: 1.05em; color:#297ab9;
       letter-spacing:0.4px; text-align:center;
@@ -93,7 +92,7 @@
     #ph-paper {
       width:17px; height:95px; background:#faf6c3; border-radius:4px; position:absolute; right:-45px; top:26px;
       box-shadow:0 1px 8px #e4d564cc, 0 1px 1px #fff8;
-      border:1.6px solid #f4ecb8; z-index:4; cursor:pointer; display:none;
+      border:1.6px solid #f4ecb8; z-index:4; cursor:grab; display:none;
       transition:right 0.6s cubic-bezier(.23,1.02,.83,.97), top 0.6s, background 0.7s;
     }
     #ph-paper.active { box-shadow:0 2px 20px #e4c300cc, 0 1px 1px #fff;}
@@ -177,77 +176,45 @@
   </div>
 </div>
 <div id="footer">© St. Patrick's School – Interactive Chemistry Lab | Powered by AI</div>
-<audio id="snd-pick" src="https://cdn.pixabay.com/audio/2022/07/26/audio_124bfa6f41.mp3"></audio>
-<audio id="snd-pour" src="https://cdn.pixabay.com/audio/2022/02/23/audio_116c02c792.mp3"></audio>
-<audio id="snd-dip" src="https://cdn.pixabay.com/audio/2022/02/23/audio_116fc1b4ae.mp3"></audio>
-<audio id="snd-done" src="https://cdn.pixabay.com/audio/2022/07/26/audio_123bfa6f41.mp3"></audio>
-<!-- COPY FROM HERE DOWN (this is only the script, use with full previous HTML template) -->
+<!-- Sounds are removed -->
+
 <script>
-const acids = [
-  { name: "Hydrochloric Acid", formula: "HCl", ph: 1, color: "#f25b77" },
-  { name: "Sulphuric Acid", formula: "H₂SO₄", ph: 1, color: "#fb799c" },
-  { name: "Nitric Acid", formula: "HNO₃", ph: 2, color: "#f7c38b" },
-  { name: "Acetic Acid", formula: "CH₃COOH", ph: 3, color: "#ffc69e" },
-  { name: "Lemon Juice", formula: "", ph: 3, color: "#fff47a" },
-  { name: "Carbonic Acid", formula: "H₂CO₃", ph: 4, color: "#bff0e0" },
-  { name: "Citric Acid Sol.", formula: "", ph: 2, color: "#ffec90" }
-];
-const bases = [
-  { name: "Sodium Hydroxide", formula: "NaOH", ph: 13, color: "#9fe8c7" },
-  { name: "Potassium Hydroxide", formula: "KOH", ph: 14, color: "#4ee6a7" },
-  { name: "Calcium Hydroxide", formula: "Ca(OH)₂", ph: 12, color: "#63ffe1" },
-  { name: "Ammonium Hydroxide", formula: "NH₄OH", ph: 11, color: "#adf1e6" },
-  { name: "Baking Soda", formula: "NaHCO₃", ph: 9, color: "#e7fdcb" },
-  { name: "Soap Water", formula: "", ph: 10, color: "#e6f1ff" },
-  { name: "Milk of Magnesia", formula: "Mg(OH)₂", ph: 10, color: "#b1f8f9" }
-];
 function colorForPH(pH) {
-  if (pH <= 2) return '#f90019';
-  if (pH <= 5) return '#ff8300';
-  if (pH == 6) return '#faff00';
-  if (pH == 7) return '#61e827';
-  if (pH == 8) return '#21e7de';
-  if (pH <= 11) return '#236bdb';
+  if (pH <= 2) return '#f90019'; if (pH <= 5) return '#ff8300'; if (pH == 6) return '#faff00';
+  if (pH == 7) return '#61e827'; if (pH == 8) return '#21e7de'; if (pH <= 11) return '#236bdb';
   return '#6c27e8';
 }
+
 function labelForPH(pH) {
-  if (pH <= 2) return "Strong Acid (pH 1-2)";
-  if (pH <= 5) return "Weak Acid (pH 3-5)";
-  if (pH == 6) return "Almost Neutral (pH 6)";
-  if (pH == 7) return "Neutral (pH 7)";
-  if (pH == 8) return "Weak Base (pH 8)";
-  if (pH <= 11) return "Base (pH 9-11)";
+  if (pH <= 2) return "Strong Acid (pH 1-2)"; if (pH <= 5) return "Weak Acid (pH 3-5)";
+  if (pH == 6) return "Almost Neutral (pH 6)"; if (pH == 7) return "Neutral (pH 7)";
+  if (pH == 8) return "Weak Base (pH 8)"; if (pH <= 11) return "Base (pH 9-11)";
   return "Strong Base (pH 12-14)";
 }
-function playSnd(id) { try { let s=document.getElementById(id); s.pause(); s.currentTime=0; s.play(); } catch{} }
-function makeBottle(chem, type, i) {
+
+function makeBottle(chem, type) {
   const el = document.createElement('div');
-  el.className = 'bottle bottle-'+type;
-  el.style.borderTopColor = (type=='acid'? '#fa4973':'#63e8a6');
-  el.title = chem.name+(chem.formula?' ('+chem.formula+')':'');
+  el.className = `bottle bottle-${type}`;
+  el.title = `${chem.name} ${chem.formula ? '('+chem.formula+')' : ''}`;
+  
   const cap = document.createElement('div');
-  cap.style.width='38px'; cap.style.height='14px';
-  cap.style.background=(type=='acid'? '#f45b7d':'#43d6a4');
-  cap.style.borderRadius='12px 12px 8px 8px';
-  cap.style.margin='5px auto 0 auto';
+  cap.style.cssText = `width:38px; height:14px; background:${type==='acid' ? '#f45b7d' : '#43d6a4'}; border-radius:12px 12px 8px 8px; margin:5px auto 0 auto;`;
   el.appendChild(cap);
+
   const body = document.createElement('div');
-  body.style.width='44px'; body.style.height='43px';
-  body.style.background=chem.color; body.style.borderRadius='12px';
-  body.style.margin='5px auto 0 auto';
-  body.style.boxShadow='0 2px 8px #d6ecf977';
+  body.style.cssText = `width:44px; height:43px; background:${chem.color}; border-radius:12px; margin:5px auto 0 auto; box-shadow:0 2px 8px #d6ecf977;`;
   el.appendChild(body);
+
   const lbl = document.createElement('div');
-  lbl.className='bottle-label';
-  lbl.innerHTML = chem.name+"<br>"+(chem.formula?`<span style='font-size:0.88em;color:#575;'>${chem.formula}</span>`:'');
+  lbl.className = 'bottle-label';
+  lbl.innerHTML = `${chem.name}<br>${chem.formula ? `<span style='font-size:0.88em;color:#575;'>${chem.formula}</span>` : ''}`;
   el.appendChild(lbl);
-  el.onclick = (event)=>pickBottle(event, chem, type);
+  
+  el.onclick = (event) => pickBottle(event, chem);
   return el;
 }
+
 const leftShelf = document.getElementById('left-shelf');
-acids.forEach((chem,i)=>leftShelf.appendChild(makeBottle(chem, 'acid', i)));
-bases.forEach((chem,i)=>leftShelf.appendChild(makeBottle(chem, 'base', i)));
-let pouring = false, testedSamples=0, curChem=null, curType=null;
 const mainBeaker = document.getElementById('main-beaker');
 const liquid = document.getElementById('liquid');
 const beakerLabel = document.getElementById('beaker-label');
@@ -256,191 +223,167 @@ const resultLabel = document.getElementById('result-label');
 const nextBtn = document.getElementById('nextBtn');
 const rightShelf = document.getElementById('right-shelf');
 
-// Resets event handlers for phPaper every new test
-function resetPaperHandlers() {
-  phPaper.onmousedown = phPaper.ontouchstart = null;
-  window.onmousemove = window.onmouseup = null;
-  window.ontouchmove = window.ontouchend = null;
-}
+let pouring = false;
+let curChem = null;
 
-// Drag logic for both mouse and touch
+document.addEventListener('DOMContentLoaded', async () => {
+    try {
+        const [acidsRes, basesRes] = await Promise.all([ fetch('/api/acids'), fetch('/api/bases') ]);
+        if (!acidsRes.ok || !basesRes.ok) throw new Error('Network response was not ok.');
+        
+        const acids = await acidsRes.json();
+        const bases = await basesRes.json();
+        
+        acids.forEach(chem => leftShelf.appendChild(makeBottle(chem, 'acid')));
+        bases.forEach(chem => leftShelf.appendChild(makeBottle(chem, 'base')));
+    } catch (error) {
+        console.error("Failed to load chemicals:", error);
+        leftShelf.innerHTML = "<p style='color:red; font-size: 0.9em; text-align: center;'>Error loading chemicals.</p>";
+    }
+});
+
 function enablePaperDrag() {
-  resetPaperHandlers();
-  let dragging = false, startX = 0, startY = 0, curTop = 26, curRight = -45;
+    let currentPaper = phPaper;
+    let isDragging = false, startX = 0, startY = 0;
+    let initialPaperTop = 0, initialPaperRight = 0;
 
-  function startDrag(clientX, clientY) {
-    if(phPaper.style.display!=='block') return;
-    dragging = true;
-    phPaper.classList.add('active');
-    startX = clientX;
-    startY = clientY;
-    curTop = parseFloat(phPaper.style.top);
-    curRight = parseFloat(phPaper.style.right);
-    document.body.style.cursor='grabbing';
-  }
+    const onDragStart = (e) => {
+        if (currentPaper.style.cursor === 'not-allowed') return;
+        isDragging = true;
+        currentPaper.classList.add('active');
+        currentPaper.style.transition = 'none';
+        
+        startX = e.type === 'touchstart' ? e.touches[0].clientX : e.clientX;
+        startY = e.type === 'touchstart' ? e.touches[0].clientY : e.clientY;
+        initialPaperTop = currentPaper.offsetTop;
+        initialPaperRight = parseFloat(window.getComputedStyle(currentPaper).right);
+        
+        document.addEventListener('mousemove', onDrag);
+        document.addEventListener('touchmove', onDrag, { passive: false });
+        document.addEventListener('mouseup', onDragEnd);
+        document.addEventListener('touchend', onDragEnd);
+    };
 
-  function drag(clientX, clientY) {
-    if(!dragging) return;
-    let dx = clientX - startX;
-    let dy = clientY - startY;
-    let newTop = curTop + dy;
-    let newRight = curRight - dx;
-    if(newTop<10) newTop=10; if(newTop>85) newTop=85;
-    if(newRight>-10) newRight=-10; if(newRight<-90) newRight=-90;
-    phPaper.style.top = newTop+'px';
-    phPaper.style.right = newRight+'px';
-  }
+    const onDrag = (e) => {
+        if (!isDragging) return;
+        e.preventDefault();
+        let currentX = e.type === 'touchmove' ? e.touches[0].clientX : e.clientX;
+        let currentY = e.type === 'touchmove' ? e.touches[0].clientY : e.clientY;
+        let dx = currentX - startX;
+        let dy = currentY - startY;
+        currentPaper.style.top = `${initialPaperTop + dy}px`;
+        currentPaper.style.right = `${initialPaperRight - dx}px`;
+    };
 
-  function finishDrag() {
-    dragging = false;
-    phPaper.classList.remove('active');
-    document.body.style.cursor='';
-    window.onmousemove = null;
-    window.onmouseup = null;
-    window.ontouchmove = null;
-    window.ontouchend = null;
+    const onDragEnd = () => {
+        if (!isDragging) return;
+        isDragging = false;
+        currentPaper.classList.remove('active');
 
-    let rect = phPaper.getBoundingClientRect();
-    let beakerRect = mainBeaker.getBoundingClientRect();
-    let overlap = (
-      rect.left+rect.width/2 > beakerRect.left+8 &&
-      rect.left+rect.width/2 < beakerRect.right-8 &&
-      rect.top+rect.height/2 > beakerRect.top+18 &&
-      rect.top+rect.height/2 < beakerRect.bottom-12
-    );
+        document.removeEventListener('mousemove', onDrag);
+        document.removeEventListener('touchmove', onDrag);
+        document.removeEventListener('mouseup', onDragEnd);
+        document.removeEventListener('touchend', onDragEnd);
 
-    if(overlap){
-      playSnd('snd-dip');
-      phPaper.style.transition='background 0.5s, right 0.35s, top 0.35s';
-      phPaper.style.top='60px';
-      phPaper.style.right='39px';
-      phPaper.style.background = colorForPH(curChem.ph);
-      phPaper.style.cursor='not-allowed';
-      resultLabel.innerHTML=`<span style="color:${colorForPH(curChem.ph)};font-weight:bold;">${labelForPH(curChem.ph)}</span>`;
-      setTimeout(()=>{playSnd('snd-done');},320);
-      nextBtn.style.display='inline-block';
-      resetPaperHandlers();
-    } else {
-      phPaper.style.transition='right 0.3s, top 0.3s, background 0.2s';
-      phPaper.style.top='26px';
-      phPaper.style.right='-45px';
-      phPaper.style.background='#faf6c3';
-      phPaper.style.cursor='grab';
-      resetPaperHandlers();
-      enablePaperDrag(); // Re-enable dragging
-    }
-  }
+        const paperRect = currentPaper.getBoundingClientRect();
+        const beakerRect = mainBeaker.getBoundingClientRect();
+        const isOverlapping = !(paperRect.right < beakerRect.left + 20 || paperRect.left > beakerRect.right - 20 || paperRect.bottom < beakerRect.top + 30 || paperRect.top > beakerRect.bottom - 20);
 
-  // MOUSE events
-  phPaper.onmousedown = function(e){
-    startDrag(e.clientX, e.clientY);
-    window.onmousemove = function(ev){
-      drag(ev.clientX, ev.clientY);
-    }
-    window.onmouseup = function(ev){
-      finishDrag();
-    }
-  }
+        currentPaper.style.transition = 'right 0.3s, top 0.3s, background 0.5s';
 
-  // TOUCH events
-  phPaper.ontouchstart = function(e){
-    let touch = e.touches[0];
-    startDrag(touch.clientX, touch.clientY);
-    window.ontouchmove = function(ev){
-      let t = ev.touches[0];
-      drag(t.clientX, t.clientY);
-    }
-    window.ontouchend = function(ev){
-      finishDrag();
-    }
-  }
+        if (isOverlapping && curChem) {
+            currentPaper.style.top = '60px';
+            currentPaper.style.right = '39px';
+            currentPaper.style.background = colorForPH(curChem.ph);
+            currentPaper.style.cursor = 'not-allowed';
+            
+            resultLabel.innerHTML = `<span style="color:${colorForPH(curChem.ph)}; font-weight: bold;">${labelForPH(curChem.ph)}</span>`;
+            nextBtn.style.display = 'inline-block';
+        } else {
+            currentPaper.style.top = '26px';
+            currentPaper.style.right = '-45px';
+            currentPaper.style.background = '#faf6c3';
+        }
+    };
+    
+    // Clear old listeners before adding new ones
+    const newPaper = phPaper.cloneNode(true);
+    phPaper.parentNode.replaceChild(newPaper, phPaper);
+    newPaper.addEventListener('mousedown', onDragStart);
+    newPaper.addEventListener('touchstart', onDragStart, { passive: false });
 }
 
-function pickBottle(event, chem, type) {
-  if(pouring || mainBeaker.style.display=='block') return;
-  pouring = true;
-  playSnd('snd-pick');
-  curChem=chem; curType=type;
-  const b = event.currentTarget;
-  const r = b.getBoundingClientRect();
-  const table = document.getElementById('table-zone').getBoundingClientRect();
-  const bottleAnim = b.cloneNode(true);
-  bottleAnim.style.position='fixed';
-  bottleAnim.style.left = (r.left+2)+'px';
-  bottleAnim.style.top = (r.top+2)+'px';
-  bottleAnim.style.zIndex = 999;
-  bottleAnim.style.transition = 'all 0.75s cubic-bezier(.21,.85,.46,1.05)';
-  document.body.appendChild(bottleAnim);
-  setTimeout(()=>{
-    bottleAnim.style.left = (table.left+100)+'px';
-    bottleAnim.style.top = (table.top+20)+'px';
-    bottleAnim.style.transform = 'scale(1.18)';
-  },40);
-  setTimeout(()=>{
-    playSnd('snd-pour');
-    mainBeaker.style.display='block';
-    mainBeaker.style.opacity=0.1;
-    mainBeaker.style.transform='scale(0.93)';
-    setTimeout(()=>{
-      mainBeaker.style.opacity=1;
-      mainBeaker.style.transform='scale(1)';
-      liquid.style.display='block';
-      liquid.style.background=chem.color;
-      liquid.style.height='0px';
-      liquid.style.opacity=0.85;
-      setTimeout(()=>{
-        liquid.style.height='62px';
-        liquid.style.transition='height 0.7s cubic-bezier(.35,.89,.66,1.22), background 0.9s';
-        setTimeout(()=>{
-          beakerLabel.innerHTML = chem.name + (chem.formula? `<br><span style='font-size:0.86em;color:#426;'>${chem.formula}</span>`:'');
-          setTimeout(()=>{
-            bottleAnim.style.transition = 'all 0.7s cubic-bezier(.23,1.02,.83,.97)';
-            bottleAnim.style.left = (r.left+2)+'px';
-            bottleAnim.style.top = (r.top+2)+'px';
+function pickBottle(event, chem) {
+    if (pouring || mainBeaker.style.display === 'block') return;
+    pouring = true;
+    curChem = chem;
+
+    const bottleRect = event.currentTarget.getBoundingClientRect();
+    const tableRect = document.getElementById('table-zone').getBoundingClientRect();
+    
+    const bottleAnim = event.currentTarget.cloneNode(true);
+    bottleAnim.style.cssText = `position:fixed; z-index:999; left:${bottleRect.left}px; top:${bottleRect.top}px; transition: all 0.75s cubic-bezier(.21,.85,.46,1.05);`;
+    document.body.appendChild(bottleAnim);
+
+    setTimeout(() => {
+        bottleAnim.style.left = `${tableRect.left + tableRect.width / 2 - 40}px`;
+        bottleAnim.style.top = `${tableRect.top + 20}px`;
+        bottleAnim.style.transform = 'scale(1.18)';
+    }, 40);
+
+    setTimeout(() => {
+        mainBeaker.style.display = 'block';
+        liquid.style.display = 'block';
+        liquid.style.background = chem.color;
+        liquid.style.height = '0px';
+        
+        setTimeout(() => {
+            liquid.style.transition = 'height 0.7s cubic-bezier(.35,.89,.66,1.22)';
+            liquid.style.height = '62px';
+        }, 10);
+
+        setTimeout(() => {
+            beakerLabel.innerHTML = `${chem.name}<br><span style='font-size:0.86em;color:#426;'>${chem.formula ? chem.formula : ''}</span>`;
+            bottleAnim.style.left = `${bottleRect.left}px`;
+            bottleAnim.style.top = `${bottleRect.top}px`;
             bottleAnim.style.transform = 'scale(1)';
-            setTimeout(()=>{document.body.removeChild(bottleAnim);},700);
-            // Show pH paper, ready to drag
-            phPaper.style.display='block';
-            phPaper.style.right='-45px';
-            phPaper.style.top='26px';
-            phPaper.style.background='#faf6c3';
+            setTimeout(() => { 
+                if (document.body.contains(bottleAnim)) document.body.removeChild(bottleAnim); 
+                pouring = false; 
+            }, 700);
+            
+            phPaper.style.display = 'block';
+            phPaper.style.top = '26px';
+            phPaper.style.right = '-45px';
+            phPaper.style.background = '#faf6c3';
             phPaper.style.cursor = 'grab';
-            pouring = false;
-            resultLabel.innerHTML='';
-            nextBtn.style.display='none';
             enablePaperDrag();
-          },380);
-        },440);
-      },200);
-    },220);
-  },790);
+        }, 800);
+    }, 790);
 }
 
 nextBtn.onclick = function() {
-  let mini = document.createElement('div');
-  mini.className='beaker-mini';
-  let miniLiq = document.createElement('div');
-  miniLiq.className='liquid-mini';
-  miniLiq.style.background=curChem.color;
-  mini.appendChild(miniLiq);
-  let lbl = document.createElement('div');
-  lbl.className='label-mini';
-  lbl.innerHTML = curChem.formula? curChem.formula: curChem.name.split(' ')[0];
-  mini.appendChild(lbl);
-  rightShelf.appendChild(mini);
-  mainBeaker.style.display='none';
-  liquid.style.display='none';
-  beakerLabel.innerHTML='';
-  phPaper.style.display='none';
-  phPaper.classList.remove('active');
-  phPaper.style.cursor='pointer';
-  phPaper.style.top='26px';
-  phPaper.style.right='-45px';
-  phPaper.style.background='#faf6c3';
-  resultLabel.innerHTML='';
-  nextBtn.style.display='none';
-  testedSamples++;
-  curChem=null; curType=null;
+    const mini = document.createElement('div');
+    mini.className = 'beaker-mini';
+    const miniLiq = document.createElement('div');
+    miniLiq.className = 'liquid-mini';
+    miniLiq.style.background = curChem.color;
+    mini.appendChild(miniLiq);
+
+    const lbl = document.createElement('div');
+    lbl.className = 'label-mini';
+    lbl.innerHTML = curChem.formula || curChem.name.split(' ')[0];
+    mini.appendChild(lbl);
+    
+    rightShelf.appendChild(mini);
+    
+    mainBeaker.style.display = 'none';
+    liquid.style.display = 'none';
+    beakerLabel.innerHTML = '';
+    phPaper.style.display = 'none';
+    resultLabel.innerHTML = '';
+    nextBtn.style.display = 'none';
+    curChem = null;
 }
 </script>
 </body>
